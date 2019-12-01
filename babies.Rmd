@@ -1,0 +1,348 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+df <- read_csv('../../Downloads/US_births(2018).csv')
+```
+
+```{r}
+df %>% glimpse()
+```
+
+```{r}
+df %>% 
+  group_by(MRACE31) %>% 
+  summarise(count_ = 100*n()/nrow(df), 
+            baby_wt = round(median(DBWT))) %>% 
+  ggplot(aes(MRACE31, baby_wt)) + 
+  geom_line() + 
+  geom_point() 
+```
+
+```{r}
+df %>%
+  sample_n(10**4) %>% 
+  ggplot(aes(FAGECOMB, DBWT)) + 
+  geom_point(aes(color=factor(FEDUC)), alpha=0.5) + 
+  ylim(0, 5000) + xlim(15, 50) + 
+  facet_grid(MEDUC~FEDUC)
+```
+```{r}
+df %>% 
+  count(DOB_MM) %>% 
+  ggplot(aes(DOB_MM, n)) + 
+  geom_col() + 
+  coord_flip()
+```
+```{r}
+df %>% 
+  group_by(RDMETH_REC) %>% 
+  summarise(number_ = n(),
+            percent_ = round(n()/nrow(df)*100, 7),
+            mean_ = round(mean(DBWT)), 
+            median_ = round(median(DBWT))) #%>% 
+  ggplot(aes(PRIORTERM, median_)) + 
+  geom_point()
+```
+
+```{r}
+df %>% 
+  sample_n(10**4) %>% 
+  ggplot(aes(PWgt_R, DWgt_R + DBWT/453.592)) + 
+  geom_point(alpha=0.01) #+ 
+  xlim(0, 500) + 
+  ylim(0, 500)
+```
+
+
+```{r}
+round(table(df$MRAVE6, df$FRACE6)/nrow(df)*100, 3)
+
+round(table(df[df$FRACE6!='9',]$MRACE6, df[df$FRACE6!='9',]$FRACE6)/nrow(df[df$FRACE6!='9',])*100, 3)
+```
+
+```{r}
+round(table(df$MEDUC, df$FEDUC)/nrow(df)*100, 3)
+```
+
+```{r}
+table(df$FEDUC)/nrow(df)*100
+```
+
+
+
+
+```{r}
+df %>% 
+  sample_n(8*10**5) %>% 
+  ggplot(aes(DBWT)) + 
+  geom_histogram(binwidth = 30) + 
+  xlim(0, 7000)
+```
+
+```{r}
+mean(df$DBWT, na.rm = T)
+median(df$DBWT, na.rm = T)
+```
+
+```{r}
+df %>% 
+  filter(FAGECOMB<80) %>% 
+  sample_n(10**5) %>% 
+  ggplot(aes(FAGECOMB, MAGER)) + 
+  geom_point(alpha=0.01) + 
+  xlim(15, 70) + 
+  ylim(15, 70) + 
+  geom_smooth()
+```
+
+
+```{r}
+details <- function(dataframe){
+  for (col_name in names(dataframe)){
+  df <- count(dataframe, get(col_name)) %>% arrange(desc(n))
+  colnames(df) <- c(col_name, "Frequency")
+  print(df)
+  }
+}
+
+df %>% details()
+```
+
+```{r}
+round(count(df,MRACE31)/nrow(df)*100,1)
+```
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>% 
+  group_by(MRACE31) %>% 
+  summarise(count_ = round(n()/nrow(df)*100,2)) %>% 
+  arrange(MRACE31)
+```
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>% 
+  sample_n(10**4) %>% 
+  ggplot() + 
+  geom_histogram(aes(MRACE15), alpha=0.6, fill='blue') + 
+  geom_histogram(aes(FRACE15), alpha=0.6, fill='red') 
+```
+
+
+```{r}
+df %>% 
+  sample_n(10**4) %>% 
+  ggplot(aes(DLMP_MM)) + 
+  geom_histogram() + 
+  xlim(0, 13)
+```
+
+```{r}
+df %>% 
+  sample_n(10**4) %>% 
+  ggplot(aes(ILP_R, ILLB_R, alpha=0.01)) + 
+  geom_point() + 
+  xlim(0, 100) + 
+  ylim(0, 100)
+```
+
+```{r}
+df %>% 
+  sample_n(10**4) %>% 
+  ggplot(aes(ILP_R)) + 
+  geom_histogram()
+```
+
+```{r}
+df %>% 
+  filter(ILLB_R==ILP_R) %>% 
+  dim()
+```
+
+```{r}
+round(table(df$MRACE15, df$FRACE15)/nrow(df)*100, 3)
+```
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>%
+  count()
+```
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>%
+  filter(MRACE15==1) %>% 
+  filter(FRACE15==1) %>% 
+  count()
+```
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>%
+  filter(MRACE15==1) %>% 
+  filter(FRACE15==1) %>% 
+  count()
+```
+
+
+```{r}
+2200497/3114623
+```
+
+
+```{r}
+race.df <- round(table(df[df$FRACE15!='99',]$MRACE15, df[df$FRACE15!='99',]$FRACE15)/nrow(df[df$FRACE15!='99',])*100, 3)
+```
+
+```{r}
+diag(race.df)
+```
+
+```{r}
+0.7566*.7437
+```
+
+
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>% 
+  group_by(MRACE15) %>% 
+  summarise(count_ = round(n()/nrow(df %>% filter(FRACE15!=99))*100,2)) %>% 
+  arrange(MRACE15) %>% 
+  select(count_)
+```
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>% 
+  group_by(FRACE15) %>% 
+  summarise(count_ = round(n()/nrow(df %>% filter(FRACE15!=99))*100, 2)) %>% 
+  arrange(FRACE15)
+```
+
+
+
+```{r}
+9.75/38.42
+```
+
+
+```{r}
+c %>% 
+  mutate(d = count_**2/100)
+```
+
+
+
+```{r}
+df %>% 
+  filter(FRACE15!=99)
+  
+```
+
+
+```{r}
+0.218/0.080
+```
+
+
+```{r}
+df %>% 
+  filter(FRACE15!=99) %>% 
+  dim()
+```
+
+```{r}
+df %>% 
+  #filter(FRACE15!=99) %>% 
+  filter(FRACE15==MRACE15) %>% 
+  dim()
+```
+
+
+
+```{r}
+(2781584/3114623)
+```
+
+```{r}
+df %>% dim()
+```
+```{r}
+3114623/3801534
+```
+
+```{r}
+(df %>% filter(FRACE15==99) %>% nrow())/(df %>% nrow())
+```
+
+```{r}
+
+```
+
+
+
+```{r}
+library(bnlearn)
+```
+
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install('pcalg')
+
+BiocManager::install('Rgraphviz')
+
+library(pcalg)
+
+produce_graph <- function(){
+  sampleData <- 
+    df %>% 
+    select(BMI, MAGER, FAGECOMB, FEDUC, MEDUC, PWgt_R, ILLB_R, PRECARE, WTGAIN, DBWT) %>%
+    na.omit() %>%
+    sample_n(10**6)
+  sampleData <- sampleData[,sample(ncol(sampleData))]
+  suffStat <- list(C = cor(sampleData), n = nrow(sampleData))
+  pc.gmG <- pc(suffStat, indepTest = gaussCItest, p = ncol(sampleData), alpha = 0.01)
+  plot(pc.gmG, main="")
+  colnames(sampleData)
+}
+
+produce_graph()
+```
+
+```{r}
+plot(iamb(df %>% 
+          select(DBWT, BMI, MAGER, FAGECOMB, FEDUC, MEDUC, PWgt_R, ILLB_R, PRECARE, WTGAIN) %>% 
+          na.omit() %>% 
+          sample_n(10**5)))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

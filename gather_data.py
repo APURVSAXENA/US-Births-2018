@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Get the number of entries through following command
+# !wc -l < Nat2018PublicUS.c20190509.r20190717.txt
 
 with open("Nat2018PublicUS.c20190509.r20190717.txt") as myfile:
     df = [next(myfile) for x in range(3801534)]
